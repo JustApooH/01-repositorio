@@ -1,0 +1,23 @@
+digraph classes {
+  rankdir=BT;
+  fontname="Helvetica";
+  nodesep=0.7;
+  ranksep=0.9;
+  node [shape=record, fontname="Helvetica", fontsize=11, style=filled, fillcolor="#f8fafc", color="#334155"];
+  edge [fontname="Helvetica", fontsize=10, color="#334155"];
+
+  Task [label="{Task|+ id : int\l+ title : str\l+ description : str\l+ status : str\l+ created_at : str\l|+ from_row(row) : Task\l+ to_dict() : dict\l}"];
+  Status [label="{«enumeration»\lStatus|TODO\lIN_PROGRESS\lDONE\l|+ values() : list\l}"];
+  TaskValidator [label="{TaskValidator||+ validate(data, partial) : dict\l}"];
+  ValidationError [label="{ValidationError|+ errors : dict\l|}"];
+  TaskNotFound [label="{TaskNotFound||}"];
+  TaskRepository [label="{TaskRepository|+ db_path : str\l|+ create(title, description, status) : Task\l+ get(task_id) : Task\l+ list_all(status) : list\l+ update(task_id, fields) : Task\l+ delete(task_id) : None\l}"];
+  Routes [label="{«blueprint»\lRoutes||+ board()\l+ list_tasks()\l+ create_task()\l+ get_task(task_id)\l+ update_task(task_id)\l+ delete_task(task_id)\l}"];
+
+  TaskRepository -> Task [label=" gerencia  0..*", arrowhead=vee, headlabel="", taillabel="1"];
+  Task -> Status [label=" possui", arrowhead=vee];
+  Routes -> TaskRepository [label=" usa", arrowhead=vee, style=dashed];
+  Routes -> TaskValidator [label=" usa", arrowhead=vee, style=dashed];
+  TaskValidator -> ValidationError [label=" lança", arrowhead=vee, style=dashed];
+  TaskRepository -> TaskNotFound [label=" lança", arrowhead=vee, style=dashed];
+}

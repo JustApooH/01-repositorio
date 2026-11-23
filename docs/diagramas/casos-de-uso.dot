@@ -1,0 +1,39 @@
+digraph casos_de_uso {
+  rankdir=LR;
+  fontname="Helvetica";
+  nodesep=0.45;
+  ranksep=1.8;
+  node [fontname="Helvetica", fontsize=12];
+  edge [arrowhead=none, color="#334155"];
+
+  gestor [shape=none, label="Gestor de\nProjetos", image="ator.png", labelloc=b, imagescale=false, width=1.3, height=1.7, fixedsize=true];
+  membro [shape=none, label="Membro da\nEquipe", image="ator.png", labelloc=b, imagescale=false, width=1.3, height=1.7, fixedsize=true];
+
+  subgraph cluster_sistema {
+    label="Sistema TechFlow Tasks";
+    labeljust=c;
+    style="rounded";
+    color="#334155";
+    fontsize=14;
+    node [shape=ellipse, style=filled, fillcolor="#dbeafe", color="#2563eb", width=2.6, height=0.7];
+
+    {
+      rank=same;
+      uc_quadro [label="Visualizar quadro Kanban"];
+      uc_criar [label="Criar tarefa"];
+      uc_editar [label="Editar tarefa"];
+      uc_mover [label="Mover tarefa de status"];
+      uc_excluir [label="Excluir tarefa"];
+    }
+    uc_excluir -> uc_mover -> uc_editar -> uc_criar -> uc_quadro [style=invis];
+  }
+
+  gestor -> uc_criar;
+  gestor -> uc_quadro;
+  gestor -> uc_editar;
+  gestor -> uc_mover;
+  gestor -> uc_excluir;
+  membro -> uc_quadro;
+  membro -> uc_editar;
+  membro -> uc_mover;
+}

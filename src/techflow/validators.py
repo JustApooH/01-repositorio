@@ -1,4 +1,4 @@
-from .models import Status
+from .models import Priority, Status
 
 TITLE_MAX = 100
 DESCRIPTION_MAX = 500
@@ -43,6 +43,12 @@ class TaskValidator:
                 errors["status"] = "status deve ser todo, in_progress ou done"
             else:
                 cleaned["status"] = data["status"]
+
+        if "priority" in data:
+            if data["priority"] not in Priority.values():
+                errors["priority"] = "prioridade deve ser low, medium, high ou critical"
+            else:
+                cleaned["priority"] = data["priority"]
 
         if errors:
             raise ValidationError(errors)

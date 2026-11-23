@@ -12,6 +12,24 @@ class Status(str, Enum):
         return [item.value for item in cls]
 
 
+class Priority(str, Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+    @classmethod
+    def values(cls):
+        return [item.value for item in cls]
+
+
+PRIORITY_LABELS = {
+    "low": "Baixa",
+    "medium": "Média",
+    "high": "Alta",
+    "critical": "Crítica",
+}
+
 STATUS_LABELS = {
     "todo": "A Fazer",
     "in_progress": "Em Progresso",
@@ -25,6 +43,7 @@ class Task:
     title: str
     description: str
     status: str
+    priority: str
     created_at: str
 
     @classmethod

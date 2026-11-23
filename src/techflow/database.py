@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     title TEXT NOT NULL,
     description TEXT NOT NULL DEFAULT '',
     status TEXT NOT NULL DEFAULT 'todo',
+    priority TEXT NOT NULL DEFAULT 'medium',
     created_at TEXT NOT NULL
 );
 """
@@ -31,3 +32,8 @@ def session(db_path):
 def init_db(db_path):
     with session(db_path) as conn:
         conn.executescript(SCHEMA)
+        columns = [row["name"] for row in conn.execute("PRAGMA table_info(tasks)")]
+        if "priority" not in columns:
+            conn.execute(
+                "ALTER TABLE tasks ADD COLUMN priority TEXT NOT NULL DEFAULT 'medium'"
+            )

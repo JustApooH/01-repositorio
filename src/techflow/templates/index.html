@@ -1,13 +1,42 @@
 <!doctype html>
 <html lang="pt-BR">
-<head><meta charset="utf-8"><title>TechFlow Tasks</title></head>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TechFlow Tasks</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 <body>
-<h1>TechFlow Tasks</h1>
-{% for column in columns %}
-<h2>{{ column.label }}</h2>
-<ul>
-{% for task in column.tasks %}<li>{{ task.title }}</li>{% endfor %}
-</ul>
-{% endfor %}
+  <header class="topbar">
+    <h1>TechFlow Tasks</h1>
+    <form id="task-form" class="task-form">
+      <input name="title" placeholder="Título da tarefa" maxlength="100" required>
+      <input name="description" placeholder="Descrição (opcional)" maxlength="500">
+      <button type="submit">Adicionar</button>
+    </form>
+    <p id="form-error" class="form-error" hidden></p>
+  </header>
+
+  <main class="board">
+    {% for column in columns %}
+    <section class="column" data-status="{{ column.key }}">
+      <h2>{{ column.label }} <span class="count">{{ column.tasks|length }}</span></h2>
+      {% for task in column.tasks %}
+      <article class="card" data-id="{{ task.id }}" data-status="{{ task.status }}">
+        <h3>{{ task.title }}</h3>
+        {% if task.description %}<p>{{ task.description }}</p>{% endif %}
+        <div class="actions">
+          <button data-action="back" title="Mover para a coluna anterior">&larr;</button>
+          <button data-action="forward" title="Mover para a próxima coluna">&rarr;</button>
+          <button data-action="edit">Editar</button>
+          <button data-action="delete" class="danger">Excluir</button>
+        </div>
+      </article>
+      {% endfor %}
+    </section>
+    {% endfor %}
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

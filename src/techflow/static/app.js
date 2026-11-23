@@ -25,6 +25,7 @@ document.getElementById("task-form").addEventListener("submit", async (event) =>
   const payload = {
     title: form.title.value,
     description: form.description.value,
+    priority: form.priority.value,
   };
   try {
     await request("/api/tasks", { method: "POST", body: JSON.stringify(payload) });

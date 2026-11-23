@@ -12,7 +12,21 @@
     <form id="task-form" class="task-form">
       <input name="title" placeholder="Título da tarefa" maxlength="100" required>
       <input name="description" placeholder="Descrição (opcional)" maxlength="500">
+      <select name="priority" aria-label="Prioridade">
+        {% for key, label in priority_labels.items() %}
+        <option value="{{ key }}" {% if key == "medium" %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
       <button type="submit">Adicionar</button>
+    </form>
+    <form method="get" class="filter-form">
+      <label for="priority-filter">Filtrar por prioridade:</label>
+      <select id="priority-filter" name="priority" onchange="this.form.submit()">
+        <option value="">Todas</option>
+        {% for key, label in priority_labels.items() %}
+        <option value="{{ key }}" {% if key == selected_priority %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
     </form>
     <p id="form-error" class="form-error" hidden></p>
   </header>
@@ -23,6 +37,7 @@
       <h2>{{ column.label }} <span class="count">{{ column.tasks|length }}</span></h2>
       {% for task in column.tasks %}
       <article class="card" data-id="{{ task.id }}" data-status="{{ task.status }}">
+        <span class="badge badge-{{ task.priority }}">{{ priority_labels[task.priority] }}</span>
         <h3>{{ task.title }}</h3>
         {% if task.description %}<p>{{ task.description }}</p>{% endif %}
         <div class="actions">

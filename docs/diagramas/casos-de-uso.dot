@@ -1,8 +1,8 @@
 digraph casos_de_uso {
   rankdir=LR;
   fontname="Helvetica";
-  nodesep=0.45;
-  ranksep=1.8;
+  nodesep=0.4;
+  ranksep=1.6;
   node [fontname="Helvetica", fontsize=12];
   edge [arrowhead=none, color="#334155"];
 
@@ -19,13 +19,16 @@ digraph casos_de_uso {
 
     {
       rank=same;
-      uc_quadro [label="Visualizar quadro Kanban"];
-      uc_criar [label="Criar tarefa"];
-      uc_editar [label="Editar tarefa"];
-      uc_mover [label="Mover tarefa de status"];
+      uc_filtrar [label="Filtrar por prioridade", fillcolor="#fef3c7", color="#d97706"];
       uc_excluir [label="Excluir tarefa"];
+      uc_mover [label="Mover tarefa de status"];
+      uc_editar [label="Editar tarefa"];
+      uc_criar [label="Criar tarefa"];
+      uc_quadro [label="Visualizar quadro Kanban"];
     }
-    uc_excluir -> uc_mover -> uc_editar -> uc_criar -> uc_quadro [style=invis];
+    uc_filtrar -> uc_excluir -> uc_mover -> uc_editar -> uc_criar -> uc_quadro [style=invis];
+
+    uc_prioridade [label="Definir prioridade", fillcolor="#fef3c7", color="#d97706"];
   }
 
   gestor -> uc_criar;
@@ -33,7 +36,11 @@ digraph casos_de_uso {
   gestor -> uc_editar;
   gestor -> uc_mover;
   gestor -> uc_excluir;
+  gestor -> uc_filtrar;
   membro -> uc_quadro;
   membro -> uc_editar;
   membro -> uc_mover;
+  membro -> uc_filtrar;
+
+  uc_criar -> uc_prioridade [dir=back, arrowtail=vee, style=dashed, label="«extend»", fontsize=10, fontname="Helvetica"];
 }

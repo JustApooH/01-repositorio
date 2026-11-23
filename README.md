@@ -46,7 +46,7 @@ O mesmo fluxo roda a cada push e pull request no GitHub Actions (`.github/workfl
 
 | Método | Rota | Descrição |
 |--------|------|-----------|
-| GET | `/api/tasks` | Lista tarefas (filtro opcional `?status=`) |
+| GET | `/api/tasks` | Lista tarefas ordenadas por prioridade (filtros `?status=` e `?priority=`) |
 | POST | `/api/tasks` | Cria tarefa |
 | GET | `/api/tasks/<id>` | Busca tarefa |
 | PUT | `/api/tasks/<id>` | Atualiza tarefa (parcial) |

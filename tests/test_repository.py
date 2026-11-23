@@ -65,5 +65,31 @@ class TaskRepositoryTests(unittest.TestCase):
             self.repo.delete(7)
 
 
+    def test_prioridade_padrao_e_media(self):
+        self.assertEqual(self.repo.create("Tarefa").priority, "medium")
+
+    def test_criar_com_prioridade_critica(self):
+        self.assertEqual(self.repo.create("Urgente", priority="critical").priority, "critical")
+
+    def test_atualizar_prioridade(self):
+        task = self.repo.create("Tarefa")
+        self.assertEqual(self.repo.update(task.id, priority="high").priority, "high")
+
+    def test_listagem_ordena_por_prioridade(self):
+        self.repo.create("baixa", priority="low")
+        self.repo.create("critica", priority="critical")
+        self.repo.create("media")
+        self.repo.create("alta", priority="high")
+        titles = [t.title for t in self.repo.list_all()]
+        self.assertEqual(titles, ["critica", "alta", "media", "baixa"])
+
+    def test_listagem_filtra_por_prioridade_e_status(self):
+        self.repo.create("A", status="done", priority="critical")
+        self.repo.create("B", status="todo", priority="critical")
+        self.repo.create("C", status="done", priority="low")
+        result = self.repo.list_all(status="done", priority="critical")
+        self.assertEqual([t.title for t in result], ["A"])
+
+
 if __name__ == "__main__":
     unittest.main()

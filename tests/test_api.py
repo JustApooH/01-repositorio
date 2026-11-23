@@ -91,5 +91,36 @@ class TaskApiTests(unittest.TestCase):
         self.assertIn("Visível no quadro", html)
 
 
+    def test_criar_com_prioridade(self):
+        response = self.create(title="Urgente", priority="critical")
+        self.assertEqual(response.get_json()["priority"], "critical")
+
+    def test_prioridade_padrao_na_api(self):
+        self.assertEqual(self.create(title="Normal").get_json()["priority"], "medium")
+
+    def test_criar_com_prioridade_invalida_retorna_400(self):
+        response = self.create(title="Erro", priority="nenhuma")
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("priority", response.get_json()["details"])
+
+    def test_listar_ordenado_e_filtrado_por_prioridade(self):
+        self.create(title="baixa", priority="low")
+        self.create(title="critica", priority="critical")
+        ordered = self.client.get("/api/tasks").get_json()
+        self.assertEqual([t["title"] for t in ordered], ["critica", "baixa"])
+        filtered = self.client.get("/api/tasks?priority=low").get_json()
+        self.assertEqual([t["title"] for t in filtered], ["baixa"])
+
+    def test_filtro_de_prioridade_invalido_retorna_400(self):
+        self.assertEqual(self.client.get("/api/tasks?priority=xyz").status_code, 400)
+
+    def test_quadro_filtra_por_prioridade(self):
+        self.create(title="Tarefa crítica", priority="critical")
+        self.create(title="Tarefa baixa", priority="low")
+        html = self.client.get("/?priority=critical").get_data(as_text=True)
+        self.assertIn("Tarefa crítica", html)
+        self.assertNotIn("Tarefa baixa", html)
+
+
 if __name__ == "__main__":
     unittest.main()

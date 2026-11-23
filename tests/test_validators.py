@@ -63,5 +63,15 @@ class TaskValidatorTests(unittest.TestCase):
         self.assertIn("body", ctx.exception.errors)
 
 
+    def test_prioridade_valida_e_aceita(self):
+        result = self.validator.validate({"title": "ok", "priority": "critical"})
+        self.assertEqual(result["priority"], "critical")
+
+    def test_prioridade_invalida_e_rejeitada(self):
+        with self.assertRaises(ValidationError) as ctx:
+            self.validator.validate({"title": "ok", "priority": "urgentissima"})
+        self.assertIn("priority", ctx.exception.errors)
+
+
 if __name__ == "__main__":
     unittest.main()

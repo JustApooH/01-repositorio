@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><title>TechFlow Tasks</title></head>
+<body>
+<h1>TechFlow Tasks</h1>
+{% for column in columns %}
+<h2>{{ column.label }}</h2>
+<ul>
+{% for task in column.tasks %}<li>{{ task.title }}</li>{% endfor %}
+</ul>
+{% endfor %}
+</body>
+</html>

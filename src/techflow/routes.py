@@ -1,6 +1,6 @@
 from flask import Blueprint, current_app, jsonify, render_template, request
 
-from .models import STATUS_LABELS, Status
+from .models import PRIORITY_LABELS, STATUS_LABELS, Priority, Status
 from .repository import TaskNotFound
 from .validators import TaskValidator, ValidationError
 
@@ -10,6 +10,19 @@ validator = TaskValidator()
 
 def repository():
     return current_app.extensions["task_repository"]
+
+
+def read_filters():
+    status = request.args.get("status") or None
+    priority = request.args.get("priority") or None
+    errors = {}
+    if status and status not in Status.values():
+        errors["status"] = "status deve ser todo, in_progress ou done"
+    if priority and priority not in Priority.values():
+        errors["priority"] = "prioridade deve ser low, medium, high ou critical"
+    if errors:
+        raise ValidationError(errors)
+    return status, priority
 
 
 @bp.errorhandler(ValidationError)
@@ -24,7 +37,8 @@ def handle_not_found(error):
 
 @bp.get("/")
 def board():
-    tasks = repository().list_all()
+    status, priority = read_filters()
+    tasks = repository().list_all(status=status, priority=priority)
     columns = [
         {
             "key": status.value,
@@ -33,15 +47,18 @@ def board():
         }
         for status in Status
     ]
-    return render_template("index.html", columns=columns)
+    return render_template(
+        "index.html",
+        columns=columns,
+        priority_labels=PRIORITY_LABELS,
+        selected_priority=priority or "",
+    )
 
 
 @bp.get("/api/tasks")
 def list_tasks():
-    status = request.args.get("status")
-    if status and status not in Status.values():
-        raise ValidationError({"status": "status deve ser todo, in_progress ou done"})
-    tasks = repository().list_all(status=status)
+    status, priority = read_filters()
+    tasks = repository().list_all(status=status, priority=priority)
     return jsonify([task.to_dict() for task in tasks])
 
 

@@ -9,19 +9,23 @@ class TaskNotFound(LookupError):
 
 
 class TaskRepository:
-    UPDATABLE = ("title", "description", "status")
+    UPDATABLE = ("title", "description", "status", "priority")
+    PRIORITY_ORDER = (
+        "CASE priority WHEN 'critical' THEN 0 WHEN 'high' THEN 1 "
+        "WHEN 'medium' THEN 2 ELSE 3 END"
+    )
 
     def __init__(self, db_path):
         self.db_path = db_path
         init_db(db_path)
 
-    def create(self, title, description="", status="todo"):
+    def create(self, title, description="", status="todo", priority="medium"):
         created_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
         with session(self.db_path) as conn:
             cursor = conn.execute(
-                "INSERT INTO tasks (title, description, status, created_at) "
-                "VALUES (?, ?, ?, ?)",
-                (title, description, status, created_at),
+                "INSERT INTO tasks (title, description, status, priority, created_at) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (title, description, status, priority, created_at),
             )
             task_id = cursor.lastrowid
         return self.get(task_id)
@@ -35,13 +39,19 @@ class TaskRepository:
             raise TaskNotFound(task_id)
         return Task.from_row(row)
 
-    def list_all(self, status=None):
+    def list_all(self, status=None, priority=None):
         query = "SELECT * FROM tasks"
+        filters = []
         params = []
         if status:
-            query += " WHERE status = ?"
+            filters.append("status = ?")
             params.append(status)
-        query += " ORDER BY id"
+        if priority:
+            filters.append("priority = ?")
+            params.append(priority)
+        if filters:
+            query += " WHERE " + " AND ".join(filters)
+        query += f" ORDER BY {self.PRIORITY_ORDER}, id"
         with session(self.db_path) as conn:
             rows = conn.execute(query, params).fetchall()
         return [Task.from_row(row) for row in rows]
